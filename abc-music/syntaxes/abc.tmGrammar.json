@@ -1,0 +1,19 @@
+{
+    "scopeName": "source.abc",
+    "patterns": [
+        { "include": "#title" }
+    ],
+    "repository": {
+        "title": {
+            "patterns": [                
+                {
+                    "match": "^(T:)(.*)",
+                    "captures": {
+                        "1": { "name": "keyword.other.title.abc" },
+                        "2": { "name": "string.value.title.abc" }
+                    }
+                }
+            ]
+        }
+    }
+}

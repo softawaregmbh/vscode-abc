@@ -19,6 +19,22 @@
 				"command": "abc-music.helloWorld",
 				"title": "Hello World"
 			}
+		],
+		"languages": [
+			{
+				"id": "abc",
+				"aliases": [ "ABC" ],
+				"extensions": [
+					".abc"
+				]
+			}
+		],
+		"grammars": [
+			{
+				"language": "abc",
+				"scopeName": "source.abc",
+				"path": "./syntaxes/abc.tmGrammar.json"
+			}
 		]
 	},
 	"scripts": {
