@@ -1,0 +1,10 @@
+<Project>
+  <!-- StyleCop Analyzers configuration -->
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(SolutionDir)StyleCop\softaware.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
+    <AdditionalFiles Include="$(SolutionDir)StyleCop\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+</Project>
