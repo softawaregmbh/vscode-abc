@@ -10,20 +10,22 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:abc-music.helloWorld"
+		"onCommand:abc-music.showMusicsheet"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "abc-music.helloWorld",
-				"title": "Hello World"
+				"command": "abc-music.showMusicsheet",
+				"title": "Show music sheet"
 			}
 		],
 		"languages": [
 			{
 				"id": "abc",
-				"aliases": [ "ABC" ],
+				"aliases": [
+					"ABC"
+				],
 				"extensions": [
 					".abc"
 				]
@@ -44,6 +46,9 @@
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
 		"test": "node ./out/test/runTest.js"
+	},
+	"dependencies": {
+		"abc2svg": "1.20.10"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.44.0",

@@ -10,17 +10,40 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "abc-music" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('abc-music.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
+	let disposable = vscode.commands.registerCommand('abc-music.showMusicsheet', () => {
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from ABC Music!');
+		const panel = vscode.window.createWebviewPanel(
+			'musicSheet',
+			'Music Sheet',
+			vscode.ViewColumn.Beside,
+			{} 
+		);
+
+		panel.webview.html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '');
+	
+		vscode.workspace.onDidChangeTextDocument(eventArgs => {
+			if (eventArgs.document.languageId == "abc") {
+				panel.webview.html = getWebviewContent(eventArgs.document.getText());
+			}
+		});
 	});
 
 	context.subscriptions.push(disposable);
+}
+
+
+function getWebviewContent(currentContent: string) {
+	return `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+	  <meta charset="UTF-8">
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	  <title>Cat Coding</title>
+  </head>
+  <body>
+	  <div id="abctext">` + currentContent + `</div>
+  </body>
+  </html>`;
 }
 
 // this method is called when your extension is deactivated
