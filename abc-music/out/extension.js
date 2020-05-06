@@ -1,18 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require("vscode");
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+const abc = require("abc2svg/abc2svg-1");
 function activate(context) {
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "abc-music" is now active!');
     let disposable = vscode.commands.registerCommand('abc-music.showMusicsheet', () => {
         var _a, _b;
         const panel = vscode.window.createWebviewPanel('musicSheet', 'Music Sheet', vscode.ViewColumn.Beside, {});
         panel.webview.html = getWebviewContent((_b = (_a = vscode.window.activeTextEditor) === null || _a === void 0 ? void 0 : _a.document.getText()) !== null && _b !== void 0 ? _b : '');
+        // vscode.window.showOpenDialog
         vscode.workspace.onDidChangeTextDocument(eventArgs => {
             if (eventArgs.document.languageId == "abc") {
                 panel.webview.html = getWebviewContent(eventArgs.document.getText());
@@ -23,15 +19,24 @@ function activate(context) {
 }
 exports.activate = activate;
 function getWebviewContent(currentContent) {
+    var result = '';
+    var user = {
+        img_out: function (str) {
+            result += str;
+        }
+    };
+    var abcEngine = new abc.Abc(user);
+    abcEngine.tosvg('filename', '%%bgcolor white');
+    abcEngine.tosvg('filename', currentContent);
     return `<!DOCTYPE html>
   <html lang="en">
   <head>
 	  <meta charset="UTF-8">
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	  <title>Cat Coding</title>
+	  <title>ABC Music Sheet</title>
   </head>
   <body>
-	  <div id="abctext">` + currentContent + `</div>
+	  ` + result + `
   </body>
   </html>`;
 }

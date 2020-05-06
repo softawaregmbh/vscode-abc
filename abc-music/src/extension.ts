@@ -1,13 +1,8 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as abc from 'abc2svg/abc2svg-1';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "abc-music" is now active!');
 
 	let disposable = vscode.commands.registerCommand('abc-music.showMusicsheet', () => {
@@ -21,6 +16,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 		panel.webview.html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '');
 	
+		// vscode.window.showOpenDialog
+
 		vscode.workspace.onDidChangeTextDocument(eventArgs => {
 			if (eventArgs.document.languageId == "abc") {
 				panel.webview.html = getWebviewContent(eventArgs.document.getText());
@@ -33,15 +30,28 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 function getWebviewContent(currentContent: string) {
+	var result = '';
+
+	var user = {
+		img_out: function (str: any) {
+			result += str;
+		}
+	};
+
+	var abcEngine = new abc.Abc(user);
+
+	abcEngine.tosvg('filename', '%%bgcolor white');
+	abcEngine.tosvg('filename', currentContent);
+	
 	return `<!DOCTYPE html>
   <html lang="en">
   <head>
 	  <meta charset="UTF-8">
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	  <title>Cat Coding</title>
+	  <title>ABC Music Sheet</title>
   </head>
   <body>
-	  <div id="abctext">` + currentContent + `</div>
+	  ` + result + `
   </body>
   </html>`;
 }
