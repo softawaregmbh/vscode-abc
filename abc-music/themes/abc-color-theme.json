@@ -1,5 +1,9 @@
-{
-	"$schema": "vscode://schemas/color-theme",
+{    
+    "$schema": "vscode://schemas/color-theme",	
+    "colors": {
+        "editor.selectionBackground": "#FFDF24",
+        "editor.selectionHighlightBackground": "#EFEFEF"
+    },
 	"tokenColors": [
         {
             "scope":"keyword.other",

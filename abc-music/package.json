@@ -42,9 +42,9 @@
 			{
 				"label": "ABC Music",
 				"uiTheme": "vs",
-				"path": "./themes/abc.color-theme.json"
+				"path": "./themes/abc-color-theme.json"
 			}
-		]
+		]		
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
