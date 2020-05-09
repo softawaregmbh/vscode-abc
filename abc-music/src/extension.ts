@@ -37,9 +37,12 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let printCommand = vscode.commands.registerCommand('abc-music.print', async () => {
+		if (vscode.window.activeTextEditor?.document.isUntitled) {
+			vscode.window.showInformationMessage('Please save document before printing.');
+		}
 
 		const html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', true);
-
+		
 		let fs = require("fs");
 		let url = vscode.window.activeTextEditor?.document.fileName + '_print.html';
 		fs.writeFileSync(url, html);

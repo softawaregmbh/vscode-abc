@@ -32,10 +32,13 @@ function activate(context) {
         });
     });
     let printCommand = vscode.commands.registerCommand('abc-music.print', () => __awaiter(this, void 0, void 0, function* () {
-        var _a, _b, _c;
-        const html = getWebviewContent((_b = (_a = vscode.window.activeTextEditor) === null || _a === void 0 ? void 0 : _a.document.getText()) !== null && _b !== void 0 ? _b : '', true);
+        var _a, _b, _c, _d;
+        if ((_a = vscode.window.activeTextEditor) === null || _a === void 0 ? void 0 : _a.document.isUntitled) {
+            vscode.window.showInformationMessage('Please save document before printing.');
+        }
+        const html = getWebviewContent((_c = (_b = vscode.window.activeTextEditor) === null || _b === void 0 ? void 0 : _b.document.getText()) !== null && _c !== void 0 ? _c : '', true);
         let fs = require("fs");
-        let url = ((_c = vscode.window.activeTextEditor) === null || _c === void 0 ? void 0 : _c.document.fileName) + '_print.html';
+        let url = ((_d = vscode.window.activeTextEditor) === null || _d === void 0 ? void 0 : _d.document.fileName) + '_print.html';
         fs.writeFileSync(url, html);
         url = url.replace('\\', '/');
         url = 'file:///' + url;

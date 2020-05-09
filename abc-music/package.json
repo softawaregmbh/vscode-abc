@@ -1,13 +1,19 @@
 {
 	"name": "abc-music",
-	"displayName": "ABC Music",
-	"description": "",
+	"displayName": "ABC Music Notation",
+	"description": "Syntax highlighting, live preview and print support for ABC Music Notation.",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.44.0"
 	},
+	"icon": "images/icon.png",
+	"author": {
+		"name": "softaware gmbh",
+		"email": "office@softaware.at",
+		"url": "https://www.softaware.at"
+	},
 	"categories": [
-		"Other"
+		"Programming Languages"
 	],
 	"activationEvents": [
 		"onCommand:abc-music.showMusicsheet",
@@ -18,11 +24,11 @@
 		"commands": [
 			{
 				"command": "abc-music.showMusicsheet",
-				"title": "Show music sheet"
+				"title": "Show preview"
 			},
 			{
 				"command": "abc-music.print",
-				"title": "Print music sheet"
+				"title": "Print"
 			}			
 		],
 		"languages": [
