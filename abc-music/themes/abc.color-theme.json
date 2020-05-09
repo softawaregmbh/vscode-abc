@@ -1,0 +1,73 @@
+{
+	"$schema": "vscode://schemas/color-theme",
+	"tokenColors": [
+        {
+            "scope":"keyword.other",
+            "settings": {
+                "foreground": "#038153",     
+                "fontStyle": ""
+            }
+        },
+        {
+            "scope":"string.value",
+            "settings": {
+                "foreground": "#038153",     
+            }
+        },
+        {
+            "scope":"string.value.title.abc",
+            "settings": {
+                "foreground": "#038153",
+                "fontStyle": "bold underline"     
+            }
+        },     
+        {
+            "scope":"keyword.other.instruction.abc",
+            "settings": {
+                "foreground": "#038153",
+                "fontStyle": ""  
+            }
+        },              
+        {
+            "scope":"keyword.other.ornaments.abc",
+            "settings": {
+                "foreground": "#038153",
+                "fontStyle": ""  
+            }
+        },
+        {
+            "scope":"keyword.other.words.abc",
+            "settings": {
+                "foreground": "#AD5E18",  
+                "fontStyle": ""   
+            }
+        },              
+        {
+            "scope":"keyword.other.chords.abc",
+            "settings": {
+                "foreground": "#1F73B7",     
+            }
+        },
+        {
+            "scope":"keyword.other.region.voice.abc",
+            "settings": {
+                "foreground": "#CC3340",     
+                "fontStyle": "bold underline"
+            }
+        },
+        {
+            "scope":"keyword.other.bar.abc",
+            "settings": {
+                "foreground": "#CC3340",     
+                "fontStyle": "bold"
+            }
+        },
+        {
+            "scope":"comment.line.abc",
+            "settings": {
+                "foreground": "#808080",     
+                "fontStyle": "bold"
+            }
+        }        
+    ]
+}

@@ -20,12 +20,21 @@ function activate(context) {
 exports.activate = activate;
 function getWebviewContent(currentContent) {
     var result = '';
+    let abcEngine;
     var user = {
         img_out: function (str) {
             result += str;
-        }
+        },
+        anno_stop: function (type, start, stop, x, y, w, h, s) {
+            if (["beam", "slur", "tuplet"].indexOf(type) >= 0) {
+                return;
+            }
+            //syms[start] = s		// music symbol
+            // create a rectangle
+            abcEngine.out_svg(`<rect class="abcr _${start}_" x="${x}" y="${y}" width="${w.toFixed(2)}" height="${abcEngine.sh(h).toFixed(2)}"/>\n`);
+        },
     };
-    var abcEngine = new abc.Abc(user);
+    abcEngine = new abc.Abc(user);
     abcEngine.tosvg('filename', '%%bgcolor white');
     abcEngine.tosvg('filename', currentContent);
     return `<!DOCTYPE html>
@@ -34,6 +43,9 @@ function getWebviewContent(currentContent) {
 	  <meta charset="UTF-8">
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	  <title>ABC Music Sheet</title>
+	  <style type="text/css">
+	  .abcr {fill: #d00000; fill-opacity: 0; z-index: 15}
+	  </style>
   </head>
   <body>
 	  ` + result + `

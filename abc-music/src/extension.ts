@@ -32,13 +32,25 @@ export function activate(context: vscode.ExtensionContext) {
 function getWebviewContent(currentContent: string) {
 	var result = '';
 
+	let abcEngine: any;
+
 	var user = {
 		img_out: function (str: any) {
 			result += str;
-		}
+		},
+		anno_stop: function(type: string, start: number, stop: number, x: number, y: number, w: number, h: number, s: any) {
+			if (["beam", "slur", "tuplet"].indexOf(type) >= 0) {
+				return;
+			}
+			
+			//syms[start] = s		// music symbol
+	
+			// create a rectangle
+			abcEngine.out_svg(`<rect class="abcr _${start}_" x="${x}" y="${y}" width="${w.toFixed(2)}" height="${abcEngine.sh(h).toFixed(2)}"/>\n`);
+		},
 	};
 
-	var abcEngine = new abc.Abc(user);
+	abcEngine = new abc.Abc(user);
 
 	abcEngine.tosvg('filename', '%%bgcolor white');
 	abcEngine.tosvg('filename', currentContent);
@@ -49,6 +61,9 @@ function getWebviewContent(currentContent: string) {
 	  <meta charset="UTF-8">
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	  <title>ABC Music Sheet</title>
+	  <style type="text/css">
+	  .abcr {fill: #d00000; fill-opacity: 0; z-index: 15}
+	  </style>
   </head>
   <body>
 	  ` + result + `
