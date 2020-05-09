@@ -6,7 +6,7 @@
 	"engines": {
 		"vscode": "^1.44.0"
 	},
-	"icon": "images/icon.png",
+	"icon": "https://raw.githubusercontent.com/softawaregmbh/vscode-abc/master/images/icon.png",
 	"author": {
 		"name": "softaware gmbh",
 		"email": "office@softaware.at",
@@ -15,6 +15,9 @@
 	"categories": [
 		"Programming Languages"
 	],
+	"repository": {
+		"url": "https://github.com/softawaregmbh/vscode-abc"
+	},
 	"activationEvents": [
 		"onCommand:abc-music.showMusicsheet",
 		"onCommand:abc-music.print"

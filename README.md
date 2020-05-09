@@ -5,15 +5,15 @@ This extension provides syntax highlighting, live preview and print support for 
 ## Features
 
 ### Syntax highlighting
-If you open an abc-File, you'll get syntax highlighting support for better readability.
+If you open an abc-File, you'll get syntax highlighting support for better readability. Click on notes or words in the preview to highlight the corresponding source code.
 
-![Syntax highlighting](images/screenshot-syntax-highlighting.png)
+![Syntax highlighting](https://raw.githubusercontent.com/softawaregmbh/vscode-abc/master/images/screenshot-syntax-highlighting.png)
 
 ### Live-Preview
 
 The ```Show preview``` command (press ```F1``` to open the command palette) opens a window with a live preview of the current ABC file.
 
-![Live-Preview](images/screenshot-live-preview.png)
+![Live-Preview](https://raw.githubusercontent.com/softawaregmbh/vscode-abc/master/images/screenshot-live-preview.png)
 
 ### Printing
 
