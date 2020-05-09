@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:abc-music.showMusicsheet"
+		"onCommand:abc-music.showMusicsheet",
+		"onCommand:abc-music.print"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -18,7 +19,11 @@
 			{
 				"command": "abc-music.showMusicsheet",
 				"title": "Show music sheet"
-			}
+			},
+			{
+				"command": "abc-music.print",
+				"title": "Print music sheet"
+			}			
 		],
 		"languages": [
 			{

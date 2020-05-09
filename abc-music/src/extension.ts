@@ -3,7 +3,7 @@ import * as abc from 'abc2svg/abc2svg-1';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	let disposable = vscode.commands.registerCommand('abc-music.showMusicsheet', () => {
+	let showMusicCommand = vscode.commands.registerCommand('abc-music.showMusicsheet', () => {
 
 		const panel = vscode.window.createWebviewPanel(
 			'musicSheet',
@@ -36,11 +36,26 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	});
 
-	context.subscriptions.push(disposable);
+	let printCommand = vscode.commands.registerCommand('abc-music.print', async () => {
+
+		const html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', true);
+
+		let fs = require("fs");
+		let url = vscode.window.activeTextEditor?.document.fileName + '_print.html';
+		fs.writeFileSync(url, html);
+
+		url = url.replace('\\', '/');
+		url = 'file:///' + url;
+		await vscode.env.openExternal(vscode.Uri.parse(url));
+
+	});
+
+	context.subscriptions.push(showMusicCommand);
+	context.subscriptions.push(printCommand);
 }
 
 
-function getWebviewContent(currentContent: string) {
+function getWebviewContent(currentContent: string, print: boolean = false) {
 	var svgContent = '';
 
 	let abcEngine: any;
@@ -68,6 +83,8 @@ function getWebviewContent(currentContent: string) {
 	abcEngine.tosvg('filename', '%%bgcolor white');
 	abcEngine.tosvg('filename', currentContent);
 	
+	const printCommand = print ? 'window.onload = function() { window.print(); }' : '';
+
 	return `<!DOCTYPE html>
   <html lang="en">
   <head>
@@ -83,7 +100,9 @@ function getWebviewContent(currentContent: string) {
 
 
 	<script type="text/javascript">
-		(function() {
+		(function() {			
+			${printCommand}
+
 			const vscode = acquireVsCodeApi();
 					
 			document.addEventListener('click', function(e) {
@@ -104,8 +123,9 @@ function getWebviewContent(currentContent: string) {
 						stop: stop
 					});
 				}
-			}, false);
+			}, false);					
 		}())
+		
 
 	  </script>
   </body>
