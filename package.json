@@ -19,6 +19,7 @@
 		"onCommand:abc-music.showMusicsheet",
 		"onCommand:abc-music.print"
 	],
+	"publisher": "softaware",
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
