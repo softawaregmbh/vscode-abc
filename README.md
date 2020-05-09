@@ -7,13 +7,13 @@ This extension provides syntax highlighting, live preview and print support for 
 ### Syntax highlighting
 If you open an abc-File, you'll get syntax highlighting support for better readability.
 
-![Syntax highlighting](images/screenshot-syntax-highlighting)
+![Syntax highlighting](images/screenshot-syntax-highlighting.png)
 
 ### Live-Preview
 
 The ```Show preview``` command (press ```F1``` to open the command palette) opens a window with a live preview of the current ABC file.
 
-![Live-Preview](images/screenshot-live-preview)
+![Live-Preview](images/screenshot-live-preview.png)
 
 ### Printing
 
