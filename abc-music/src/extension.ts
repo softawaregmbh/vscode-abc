@@ -3,8 +3,6 @@ import * as abc from 'abc2svg/abc2svg-1';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	console.log('Congratulations, your extension "abc-music" is now active!');
-
 	let disposable = vscode.commands.registerCommand('abc-music.showMusicsheet', () => {
 
 		const panel = vscode.window.createWebviewPanel(
@@ -31,8 +29,6 @@ export function activate(context: vscode.ExtensionContext) {
 			context.subscriptions
 		);
 		
-		  // vscode.window.showOpenDialog
-
 		vscode.workspace.onDidChangeTextDocument(eventArgs => {
 			if (eventArgs.document.languageId == "abc") {
 				panel.webview.html = getWebviewContent(eventArgs.document.getText());
@@ -58,14 +54,13 @@ function getWebviewContent(currentContent: string) {
 				return;
 			}
 			
-			//syms[start] = s		// music symbol
-	
 			// create a rectangle as a clickable marker and add caret corresponding position as css class
 			abcEngine.out_svg(`<rect class="selMarker _${start}-${stop}_" x="`);
 			// out_sxsy translates x and y for correct positioning
 			abcEngine.out_sxsy(x, '" y="', y);
 			abcEngine.out_svg(`" width="${w.toFixed(2)}" height="${abcEngine.sh(h).toFixed(2)}"/>\n`);
 		},
+		imagesize: `width="100%" `
 	};
 
 	abcEngine = new abc.Abc(user);

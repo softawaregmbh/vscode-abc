@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 const abc = require("abc2svg/abc2svg-1");
 function activate(context) {
-    console.log('Congratulations, your extension "abc-music" is now active!');
     let disposable = vscode.commands.registerCommand('abc-music.showMusicsheet', () => {
         var _a, _b;
         const panel = vscode.window.createWebviewPanel('musicSheet', 'Music Sheet', vscode.ViewColumn.Beside, {
@@ -17,7 +16,6 @@ function activate(context) {
                     return;
             }
         }, undefined, context.subscriptions);
-        // vscode.window.showOpenDialog
         vscode.workspace.onDidChangeTextDocument(eventArgs => {
             if (eventArgs.document.languageId == "abc") {
                 panel.webview.html = getWebviewContent(eventArgs.document.getText());
@@ -38,13 +36,13 @@ function getWebviewContent(currentContent) {
             if (["beam", "slur", "tuplet"].indexOf(type) >= 0) {
                 return;
             }
-            //syms[start] = s		// music symbol
             // create a rectangle as a clickable marker and add caret corresponding position as css class
             abcEngine.out_svg(`<rect class="selMarker _${start}-${stop}_" x="`);
             // out_sxsy translates x and y for correct positioning
             abcEngine.out_sxsy(x, '" y="', y);
             abcEngine.out_svg(`" width="${w.toFixed(2)}" height="${abcEngine.sh(h).toFixed(2)}"/>\n`);
         },
+        imagesize: `width="100%" `
     };
     abcEngine = new abc.Abc(user);
     abcEngine.tosvg('filename', '%%bgcolor white');
