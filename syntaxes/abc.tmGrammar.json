@@ -1,12 +1,12 @@
 {
     "scopeName": "source.abc",
     "patterns": [
+        { "include": "#referencenumber" },
         { "include": "#title" },
         { "include": "#key" },
         { "include": "#meter" },
         { "include": "#length" },
         { "include": "#tempo" },
-        { "include": "#referencenumber" },
         { "include": "#composer" },
         { "include": "#instructions" },
         { "include": "#comments" },
@@ -112,7 +112,7 @@
             "beginCaptures": {
                 "0": { "name": "keyword.other.region.voice.abc" }
             },
-            "while": "(?# include lines until one contains 'V:')^(?!V:\\d)",
+            "while": "(?# include lines until one contains 'V:')^(?!V:\\d|X:)",
             "patterns": [
                 { "include": "#chords" },
                 { "include": "#words" },

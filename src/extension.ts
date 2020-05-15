@@ -3,6 +3,8 @@ import * as abc from 'abc2svg/abc2svg-1';
 
 export function activate(context: vscode.ExtensionContext) {
 
+	const outputChannel = vscode.window.createOutputChannel('ABC Errors');
+
 	let showMusicCommand = vscode.commands.registerCommand('abc-music.showMusicsheet', () => {
 
 		const panel = vscode.window.createWebviewPanel(
@@ -14,7 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		);
 
-		panel.webview.html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '');
+		panel.webview.html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', outputChannel);
 	
 		panel.webview.onDidReceiveMessage(
 			message => {
@@ -31,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 		
 		vscode.workspace.onDidChangeTextDocument(eventArgs => {
 			if (eventArgs.document.languageId == "abc") {
-				panel.webview.html = getWebviewContent(eventArgs.document.getText());
+				panel.webview.html = getWebviewContent(eventArgs.document.getText(), outputChannel);
 			}
 		});
 	});
@@ -41,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage('Please save document before printing.');
 		}
 
-		const html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', true);
+		const html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', outputChannel, true);
 		
 		let fs = require("fs");
 		let url = vscode.window.activeTextEditor?.document.fileName + '_print.html';
@@ -58,10 +60,11 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 
-function getWebviewContent(currentContent: string, print: boolean = false) {
+function getWebviewContent(currentContent: string, outputChannel: vscode.OutputChannel, print: boolean = false) {
 	var svgContent = '';
 
 	let abcEngine: any;
+	let characterOffset: number = 0;
 
 	var user = {
 		img_out: function (str: any) {
@@ -71,6 +74,10 @@ function getWebviewContent(currentContent: string, print: boolean = false) {
 			if (["beam", "slur", "tuplet"].indexOf(type) >= 0) {
 				return;
 			}
+
+			// add offset of previous songs in the same file to start and stop
+			start += characterOffset;
+			stop += characterOffset;
 			
 			// create a rectangle as a clickable marker and add caret corresponding position as css class
 			abcEngine.out_svg(`<rect class="selMarker _${start}-${stop}_" x="`);
@@ -78,13 +85,25 @@ function getWebviewContent(currentContent: string, print: boolean = false) {
 			abcEngine.out_sxsy(x, '" y="', y);
 			abcEngine.out_svg(`" width="${w.toFixed(2)}" height="${abcEngine.sh(h).toFixed(2)}"/>\n`);
 		},
-		imagesize: `width="100%" `
+		imagesize: `width="100%" `,
+		errbld: function(severityLevel:number, message: string, fileName: string, lineNumber: number, columnNumber: number) {
+			outputChannel.appendLine(`Line ${lineNumber}, Column ${columnNumber}: ${message}`);
+		}
 	};
+
+	let songsInFile: string[] = currentContent.split(new RegExp('(?=X:)', 'gm'));
 
 	abcEngine = new abc.Abc(user);
 
-	abcEngine.tosvg('filename', '%%bgcolor white');
-	abcEngine.tosvg('filename', currentContent);
+	try {
+		abcEngine.tosvg('song', '%%bgcolor white');
+		songsInFile.forEach(element => {
+			abcEngine.tosvg('song', element);
+			characterOffset += element.length;
+		});
+	} catch (error) {
+		vscode.window.showErrorMessage(error.message);
+	}
 	
 	const printCommand = print ? 'window.onload = function() { window.print(); }' : '';
 
@@ -148,7 +167,7 @@ export function jumpToPosition(start: number, stop: number) {
 	
 	let currentCharacterCount: number = 0;
 
-	while((currentCharacterCount + (lines[lineNumber - 1].length + 1)) < start) {
+	while((currentCharacterCount + (lines[lineNumber - 1].length + 1)) <= start) {
 		// add line length of current line number + add 1 (for \n)
 		currentCharacterCount += (lines[lineNumber - 1].length + 1);
 		lineNumber++;
@@ -158,7 +177,8 @@ export function jumpToPosition(start: number, stop: number) {
 
 	let selectionLength = stop-start;
 	editor.selection = new vscode.Selection(lineNumber - 1, charactersBeforePosition, lineNumber - 1, charactersBeforePosition+selectionLength);
-	
+	editor.revealRange(new vscode.Range(lineNumber, 0, lineNumber + 10, 0));
+
 	vscode.window.activeTextEditor = editor;
 }
 

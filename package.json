@@ -6,7 +6,7 @@
 	"engines": {
 		"vscode": "^1.44.0"
 	},
-	"icon": "https://raw.githubusercontent.com/softawaregmbh/vscode-abc/master/images/icon.png",
+	"icon": "images/icon.png",
 	"author": {
 		"name": "softaware gmbh",
 		"email": "office@softaware.at",
