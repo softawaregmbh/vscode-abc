@@ -18,3 +18,9 @@ The ```Show preview``` command (press ```F1``` to open the command palette) open
 ### Printing
 
 The ```Print``` command saves the current music sheet as HTML file and opens it in your default browser for printing. We suggest Google Chrome for best results.
+
+### Snippets
+
+There are some snippets included to generate ABC code for you. Just type ```abc-``` in your ABC file and select a snippet.
+
+![Snippets](https://raw.githubusercontent.com/softawaregmbh/vscode-abc/master/images/screenshot-abc-snippets.gif)

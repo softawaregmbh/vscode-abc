@@ -2,7 +2,7 @@
 	"name": "abc-music",
 	"displayName": "ABC Music Notation",
 	"description": "Syntax highlighting, live preview and print support for ABC Music Notation.",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"engines": {
 		"vscode": "^1.44.0"
 	},
@@ -59,7 +59,13 @@
 				"uiTheme": "vs",
 				"path": "./themes/abc-color-theme.json"
 			}
-		]		
+		],
+		"snippets": [
+			{
+				"language": "abc",
+				"path": "./snippets/snippets.json"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

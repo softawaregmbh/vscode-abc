@@ -1,0 +1,82 @@
+{
+	"Insert ABC Header": {
+		"prefix": "abc-header",
+		"body": [
+			"X:1",
+			"T:${1:Title}",
+			"C:${2:Composer}",
+			"M:${3|4/4,3/4,6/8,2/2|}",
+			"L:${4|1/8,1/4,1/16|}",
+			"K:${5:C}",
+			"V:1"
+		],
+		"description": "Insert ABC Header"
+    },
+    "Insert ABC Header (SATB)": {
+		"prefix": "abc-header-satb",
+		"body": [
+			"X:1",
+            "T:${1:Title}",
+            "C:${2:Composer}",
+			"M:${3|4/4,3/4,6/8,2/2|}",
+			"L:${4|1/8,1/4,1/16|}",
+			"K:${5:C}",
+            "V:1 name=\"Sopran\" sname=\"S\"",
+            "V:2 name=\"Alt\" sname=\"A\"",
+            "V:3 name=\"Tenor\" sname=\"T\" clef=treble-8",
+            "V:4 name=\"Bass\" sname=\"B\" clef=bass"
+		],
+		"description": "Insert ABC Header for SATB"
+    },
+    "Insert Voice: Soprano": {
+		"prefix": "abc-voice-sopran",
+		"body": [
+			"V:${1} name=\"Sopran\" sname=\"S\""
+		],
+		"description": "Insert Voice for Soprano"
+    },
+    "Insert Voice: Alto": {
+		"prefix": "abc-voice-alto",
+		"body": [
+			"V:${1} name=\"Alt\" sname=\"A\""
+		],
+		"description": "Insert Voice for Alto"
+    },
+    "Insert Voice: Tenor": {
+		"prefix": "abc-voice-tenor",
+		"body": [
+			"V:${1} name=\"Tenor\" sname=\"T\" clef=${2|treble-8,bass|}"
+		],
+		"description": "Insert Voice for Tenor"
+    },
+    "Insert Voice: Bass": {
+		"prefix": "abc-voice-bass",
+		"body": [
+            "V:${1} name=\"Bass\" sname=\"B\" clef=bass"
+		],
+		"description": "Insert Voice for Bass"
+    },
+    "Format sheet (Style 1)": {
+        "prefix": "abc-format-style1",
+		"body": [
+            "%%pagewidth 21cm",
+            "%%pageheight 29.6cm",
+            "%%leftmargin 1.5cm",
+            "%%rightmargin 1.5cm",
+            "%%titlefont Helvetica 24",
+            "%%subtitlefont Helvetica 17",
+            "%%composerfont Helvetica 12",
+            "%%gchordfont Helvetica 10",
+            "%%vocalfont Helvetica 11",
+            "%%voicefont Helvetica 11",
+            "%%partsfont Helvetica 12",
+            "%%repeatfont Helvetica 11",
+            "%%textfont Helvetica 12",
+            "%%titleformat T-1, C-1",
+            "%%partsbox 0",
+            "%%measurenb 0",
+            "%%musicspace 1cm",
+            "%%contbarnb 1"
+        ]
+    }
+}
