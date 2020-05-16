@@ -1,10 +1,13 @@
-/// <reference path="../node_modules/@types/node/fs.d.ts" />
-
 import * as vscode from 'vscode';
-import * as abc from 'abc2svg/abc2svg-1';
+//import * as abc from 'abc2svg/abc2svg-1';
+import * as abc from 'abc2svg/abc2svg-1'
+//import * as combine from 'abc2svg/combine-1'
+//import * as perc from 'abc2svg/perc-1'
+//import * as midi from 'abc2svg/MIDI-1'
 import * as path from 'path';
-import { Func } from 'mocha';
-import { fstat } from 'fs';
+import { V4MAPPED } from 'dns';
+//import * as abc from 'abc2svg/abc2svg-complete';
+
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -109,18 +112,25 @@ function getWebviewContent(
 		// Get path to resource on disk
 		const url = vscode.Uri.file(path.join(extensionPath, 'node_modules', 'abc2svg', scriptName));
 		
-		let fs = require("fs");
+		const fs = require("fs");
+		const vm = require("vm");
+
 		let moduleJavascript: string = fs.readFileSync(url.fsPath);
+		const context = {
+			abc2svg: abc.abc2svg
+		};
 
-		// What now?
-
+		const script = new vm.Script(moduleJavascript);
+		vm.createContext(context);
+		script.runInContext(context);
+		
 		vscode.window.showInformationMessage(`Loaded module ${scriptName}.`);
 		return true;
 	};
 
 	let songsInFile: string[] = currentContent.split(new RegExp('(?=X:)', 'gm'));
 
-	abcEngine = new abc.Abc(user);
+	abcEngine = new abc.abc2svg.Abc(user);
 
 	try {
 		abcEngine.tosvg('song', '%%bgcolor white');

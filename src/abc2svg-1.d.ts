@@ -1,1 +1,1 @@
-declare module 'abc2svg/abc2svg-1'
+declare module 'abc2svg/abc2svg-1';
