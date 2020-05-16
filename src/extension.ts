@@ -1,12 +1,19 @@
+/// <reference path="../node_modules/@types/node/fs.d.ts" />
+
 import * as vscode from 'vscode';
 import * as abc from 'abc2svg/abc2svg-1';
+import * as path from 'path';
+import { Func } from 'mocha';
+import { fstat } from 'fs';
 
 export function activate(context: vscode.ExtensionContext) {
 
 	const outputChannel = vscode.window.createOutputChannel('ABC Errors');
 
+	// Preview command
 	let showMusicCommand = vscode.commands.registerCommand('abc-music.showMusicsheet', () => {
 
+		// webview panel for live preview
 		const panel = vscode.window.createWebviewPanel(
 			'musicSheet',
 			'Music Sheet',
@@ -16,8 +23,9 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		);
 
-		panel.webview.html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', outputChannel);
+		panel.webview.html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', context.extensionPath, outputChannel);
 	
+		// handle messages from the webview
 		panel.webview.onDidReceiveMessage(
 			message => {
 			  
@@ -31,19 +39,21 @@ export function activate(context: vscode.ExtensionContext) {
 			context.subscriptions
 		);
 		
+		// refresh preview whenever the text changes
 		vscode.workspace.onDidChangeTextDocument(eventArgs => {
 			if (eventArgs.document.languageId == "abc") {
-				panel.webview.html = getWebviewContent(eventArgs.document.getText(), outputChannel);
+				panel.webview.html = getWebviewContent(eventArgs.document.getText(), context.extensionPath, outputChannel);
 			}
 		});
 	});
 
+	// Print command
 	let printCommand = vscode.commands.registerCommand('abc-music.print', async () => {
 		if (vscode.window.activeTextEditor?.document.isUntitled) {
 			vscode.window.showInformationMessage('Please save document before printing.');
 		}
 
-		const html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', outputChannel, true);
+		const html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', context.extensionPath, outputChannel, true);
 		
 		let fs = require("fs");
 		let url = vscode.window.activeTextEditor?.document.fileName + '_print.html';
@@ -60,9 +70,13 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 
-function getWebviewContent(currentContent: string, outputChannel: vscode.OutputChannel, print: boolean = false) {
+function getWebviewContent(
+	currentContent: string, 
+	extensionPath: string, 
+	outputChannel: vscode.OutputChannel, 
+	print: boolean = false) {
 	var svgContent = '';
-
+	
 	let abcEngine: any;
 	let characterOffset: number = 0;
 
@@ -91,6 +105,19 @@ function getWebviewContent(currentContent: string, outputChannel: vscode.OutputC
 		}
 	};
 
+	abc.abc2svg.loadjs = function(scriptName: string, relay: any, fn2: any) {
+		// Get path to resource on disk
+		const url = vscode.Uri.file(path.join(extensionPath, 'node_modules', 'abc2svg', scriptName));
+		
+		let fs = require("fs");
+		let moduleJavascript: string = fs.readFileSync(url.fsPath);
+
+		// What now?
+
+		vscode.window.showInformationMessage(`Loaded module ${scriptName}.`);
+		return true;
+	};
+
 	let songsInFile: string[] = currentContent.split(new RegExp('(?=X:)', 'gm'));
 
 	abcEngine = new abc.Abc(user);
@@ -98,6 +125,14 @@ function getWebviewContent(currentContent: string, outputChannel: vscode.OutputC
 	try {
 		abcEngine.tosvg('song', '%%bgcolor white');
 		songsInFile.forEach(element => {
+			abc.abc2svg.modules.load(
+				element, 
+				function() {
+				}, 
+				function(errorMessage: string) {
+					vscode.window.showErrorMessage(errorMessage);
+				}
+			);
 			abcEngine.tosvg('song', element);
 			characterOffset += element.length;
 		});
@@ -119,7 +154,6 @@ function getWebviewContent(currentContent: string, outputChannel: vscode.OutputC
   </head>
   <body>
 	${svgContent}
-
 
 	<script type="text/javascript">
 		(function() {			
