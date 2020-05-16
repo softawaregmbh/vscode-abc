@@ -26,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		);
 
-		panel.webview.html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', context.extensionPath, outputChannel);
+		panel.webview.html = getWebviewContent(getNormalizedEditorContent(vscode.window.activeTextEditor), context.extensionPath, outputChannel);
 	
 		// handle messages from the webview
 		panel.webview.onDidReceiveMessage(
@@ -45,7 +45,8 @@ export function activate(context: vscode.ExtensionContext) {
 		// refresh preview whenever the text changes
 		vscode.workspace.onDidChangeTextDocument(eventArgs => {
 			if (eventArgs.document.languageId == "abc") {
-				panel.webview.html = getWebviewContent(eventArgs.document.getText(), context.extensionPath, outputChannel);
+				
+				panel.webview.html = getWebviewContent(getNormalizedEditorContent(vscode.window.activeTextEditor), context.extensionPath, outputChannel);
 			}
 		});
 	});
@@ -56,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage('Please save document before printing.');
 		}
 
-		const html = getWebviewContent(vscode.window.activeTextEditor?.document.getText() ?? '', context.extensionPath, outputChannel, true);
+		const html = getWebviewContent(getNormalizedEditorContent(vscode.window.activeTextEditor), context.extensionPath, outputChannel, true);
 		
 		let fs = require("fs");
 		let url = vscode.window.activeTextEditor?.document.fileName + '_print.html';
@@ -72,6 +73,19 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(printCommand);
 }
 
+function getNormalizedEditorContent(editor?: vscode.TextEditor) {
+	if (editor == null) {
+		return "";
+	}
+
+	let content = editor?.document.getText();
+
+	if (editor?.document.eol == vscode.EndOfLine.CRLF) {
+		content = content.replace(/\r\n/g, "\n");
+	}
+
+	return content;
+}
 
 function getWebviewContent(
 	currentContent: string, 
@@ -117,7 +131,8 @@ function getWebviewContent(
 
 		let moduleJavascript: string = fs.readFileSync(url.fsPath);
 		const context = {
-			abc2svg: abc.abc2svg
+			abc2svg: abc.abc2svg,
+			user: abcEngine
 		};
 
 		const script = new vm.Script(moduleJavascript);
@@ -128,24 +143,23 @@ function getWebviewContent(
 		return true;
 	};
 
-	let songsInFile: string[] = currentContent.split(new RegExp('(?=X:)', 'gm'));
-
 	abcEngine = new abc.abc2svg.Abc(user);
 
 	try {
 		abcEngine.tosvg('song', '%%bgcolor white');
-		songsInFile.forEach(element => {
-			abc.abc2svg.modules.load(
-				element, 
-				function() {
-				}, 
-				function(errorMessage: string) {
-					vscode.window.showErrorMessage(errorMessage);
-				}
-			);
-			abcEngine.tosvg('song', element);
-			characterOffset += element.length;
-		});
+
+
+		abc.abc2svg.modules.load(
+			currentContent, 
+			function() {
+			}, 
+			function(errorMessage: string) {
+				vscode.window.showErrorMessage(errorMessage);
+			}
+		);
+		abcEngine.tosvg('song', currentContent);
+		characterOffset += currentContent.length;
+		
 	} catch (error) {
 		vscode.window.showErrorMessage(error.message);
 	}
