@@ -1,13 +1,6 @@
 import * as vscode from 'vscode';
-//import * as abc from 'abc2svg/abc2svg-1';
 import * as abc from 'abc2svg/abc2svg-1'
-//import * as combine from 'abc2svg/combine-1'
-//import * as perc from 'abc2svg/perc-1'
-//import * as midi from 'abc2svg/MIDI-1'
 import * as path from 'path';
-import { V4MAPPED } from 'dns';
-//import * as abc from 'abc2svg/abc2svg-complete';
-
 
 export function activate(context: vscode.ExtensionContext) {
 
