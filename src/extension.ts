@@ -2,68 +2,71 @@ import * as vscode from 'vscode';
 import * as abc from 'abc2svg/abc2svg-1'
 import * as path from 'path';
 
+let diagnosticCollection: vscode.DiagnosticCollection;
+let panel: vscode.WebviewPanel;
+
 export function activate(context: vscode.ExtensionContext) {
 
 	const outputChannel = vscode.window.createOutputChannel('ABC Errors');
 
 	// Preview command
-	let showMusicCommand = vscode.commands.registerCommand('abc-music.showMusicsheet', () => {
-
-		// webview panel for live preview
-		const panel = vscode.window.createWebviewPanel(
-			'musicSheet',
-			'Music Sheet',
-			vscode.ViewColumn.Beside,
-			{
-				enableScripts: true
-			}
-		);
-
-		panel.webview.html = getWebviewContent(getNormalizedEditorContent(vscode.window.activeTextEditor), context.extensionPath, outputChannel);
-	
-		// handle messages from the webview
-		panel.webview.onDidReceiveMessage(
-			message => {
-			  
-			  switch (message.command) {
-				case 'selection':
-				  jumpToPosition(message.start, message.stop);
-				  return;
-			  }
-			},
-			undefined,
-			context.subscriptions
-		);
-		
-		// refresh preview whenever the text changes
-		vscode.workspace.onDidChangeTextDocument(eventArgs => {
-			if (eventArgs.document.languageId == "abc") {
-				
-				panel.webview.html = getWebviewContent(getNormalizedEditorContent(vscode.window.activeTextEditor), context.extensionPath, outputChannel);
-			}
-		});
-	});
+	let showMusicCommand = vscode.commands.registerCommand('abc-music.showMusicsheet', () => showMusicPreview(context, outputChannel));
 
 	// Print command
-	let printCommand = vscode.commands.registerCommand('abc-music.print', async () => {
-		if (vscode.window.activeTextEditor?.document.isUntitled) {
-			vscode.window.showInformationMessage('Please save document before printing.');
-		}
+	let printCommand = vscode.commands.registerCommand('abc-music.print', () => print(context));
 
-		const html = getWebviewContent(getNormalizedEditorContent(vscode.window.activeTextEditor), context.extensionPath, outputChannel, true);
-		
-		let fs = require("fs");
-		let url = vscode.window.activeTextEditor?.document.fileName + '_print.html';
-		fs.writeFileSync(url, html);
-
-		url = url.replace('\\', '/');
-		url = 'file:///' + url;
-		await vscode.env.openExternal(vscode.Uri.parse(url));
-
-	});
-
+	diagnosticCollection = vscode.languages.createDiagnosticCollection('abc');
+	context.subscriptions.push(diagnosticCollection);
 	context.subscriptions.push(showMusicCommand);
 	context.subscriptions.push(printCommand);
+
+	// automatically open preview
+	showMusicPreview(context, outputChannel);
+
+	// show errors and refresh preview whenever the text changes
+	vscode.workspace.onDidChangeTextDocument(eventArgs => {
+		if (eventArgs.document.languageId == "abc") {
+			let html: string = getWebviewContent(getNormalizedEditorContent(vscode.window.activeTextEditor), context.extensionPath);
+			
+			if (panel != null) {
+				panel.webview.html = html;
+			}
+		}
+	});
+}
+
+function showMusicPreview(context: vscode.ExtensionContext, outputChannel: vscode.OutputChannel) {
+	// webview panel for live preview
+	panel = vscode.window.createWebviewPanel('musicSheet', 'Music Sheet', vscode.ViewColumn.Beside, {
+		enableScripts: true
+	});
+
+	panel.webview.html = getWebviewContent(getNormalizedEditorContent(vscode.window.activeTextEditor), context.extensionPath);
+	
+	// handle messages from the webview
+	panel.webview.onDidReceiveMessage(message => {
+		switch (message.command) {
+			case 'selection':
+				jumpToPosition(message.start, message.stop);
+				return;
+		}
+	}, undefined, context.subscriptions);	
+}
+
+async function print(context: vscode.ExtensionContext) {
+	if (vscode.window.activeTextEditor?.document.isUntitled) {
+		vscode.window.showInformationMessage('Please save document before printing.');
+	}
+
+	const html = getWebviewContent(getNormalizedEditorContent(vscode.window.activeTextEditor), context.extensionPath, true);
+	
+	let fs = require("fs");
+	let url = vscode.window.activeTextEditor?.document.fileName + '_print.html';
+	fs.writeFileSync(url, html);
+
+	url = url.replace('\\', '/');
+	url = 'file:///' + url;
+	await vscode.env.openExternal(vscode.Uri.parse(url));
 }
 
 function getNormalizedEditorContent(editor?: vscode.TextEditor) {
@@ -83,12 +86,14 @@ function getNormalizedEditorContent(editor?: vscode.TextEditor) {
 function getWebviewContent(
 	currentContent: string, 
 	extensionPath: string, 
-	outputChannel: vscode.OutputChannel, 
 	print: boolean = false) {
 	var svgContent = '';
 	
 	let abcEngine: any;
 	let characterOffset: number = 0;
+	let lines: string[] = currentContent.split("\n");
+
+	diagnosticCollection.clear();
 
 	var user = {
 		img_out: function (str: any) {
@@ -110,8 +115,25 @@ function getWebviewContent(
 			abcEngine.out_svg(`" width="${w.toFixed(2)}" height="${abcEngine.sh(h).toFixed(2)}"/>\n`);
 		},
 		imagesize: `width="100%" `,
-		errbld: function(severityLevel:number, message: string, fileName: string, lineNumber: number, columnNumber: number) {
-			outputChannel.appendLine(`Line ${lineNumber}, Column ${columnNumber}: ${message}`);
+		errmsg: function(message: string, lineNumber: number, columnNumber: number) {
+			let range: vscode.Range;
+			
+			if (columnNumber == 0) {
+				range = new vscode.Range(lineNumber, 1, lineNumber, lines[lineNumber].length)
+			}
+			else {
+				range = new vscode.Range(lineNumber, columnNumber, lineNumber, lines[lineNumber].length);
+			}
+
+			let d = new vscode.Diagnostic(
+				range,
+				message,
+				vscode.DiagnosticSeverity.Error);
+
+			diagnosticCollection.set(
+				vscode.window.activeTextEditor?.document.uri ?? vscode.Uri.parse('song'),
+				[ d ]
+			);
 		}
 	};
 
