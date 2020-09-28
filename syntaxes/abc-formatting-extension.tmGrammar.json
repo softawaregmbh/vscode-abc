@@ -1,0 +1,252 @@
+{
+  "fileTypes": [
+    "fmt"
+  ],
+  "name": "ABC Formatting Extension",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#directive"
+    },
+    {
+      "include": "#embedded-content"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "begin": "(?:^\\s*)?(%(?!abc))",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.comment.fmt"
+            }
+          },
+          "end": "$",
+          "name": "comment.line.percentage.fmt"
+        },
+        {
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.comment.fmt"
+            },
+            "2": {
+              "name": "keyword.other.special-method.namespace.fmt"
+            }
+          },
+          "match": "(?:^\\s*)?(?>(%)(abc(?:-\\d\\.\\d)?))",
+          "name": "comment.line.namespace.fmt"
+        }
+      ]
+    },
+    "directive": {
+      "begin": "^\\s*((?!(?:begin|end(?:text|svg|ps|js|md|ml))|postscript|ps)\\w*)\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.operator.word.directive.abc"
+        }
+      },
+      "contentName": "variable.parameter.directive.abc",
+      "end": "$",
+      "name": "meta.directive.abc",
+      "patterns": [
+        {
+          "match": "(?x)\n  (MIDI +\n    (?:no)?barlines|bassprog|(?:no)?beataccents|beat(?:mod|string)?|\n    bend(?:velocity|string)|chord(?:attack|name|program)|\n    control(?:combo|string)?|deltaloudness|droneo(?:n|ff)|\n    drum(?:on|off|bars|map)|expand|fermata(?:fixed|proportional)?|\n    gchord(?:on|off)?|grace(?:divider)?|makechordchannels|pitchbend|\n    portamento|program|ptstress|randomchordattack|ratio|stressmodel|\n    snt|rtranspose|temperament(?:linear|equal|normal)|transpose|\n    trim|vol(inc)?)\\b",
+          "name": "keyword.operator.word.directive.midi.abc"
+        },
+        {
+          "match": "(\\d*(?:\\.\\d*)?(?:pt|in|cm)?)",
+          "name": "constant.numeric.float.length-unit.abc"
+        },
+        {
+          "match": "(?i)\\b(true|false|yes|no|on|off)\\b",
+          "name": "storage.type.directive.abc"
+        },
+        {
+          "include": "#comments"
+        }
+      ]
+    },
+    "embedded-content": {
+      "patterns": [
+        {
+          "begin": "^\\s*(begintext)\\b(\\s+(?:obeylines|fill|ragged|justify|align|skip))?\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            },
+            "2": {
+              "name": "variable.parameter.directive.abc"
+            }
+          },
+          "comment": "Typeset Text",
+          "contentName": "string.unquoted.typeset.abc",
+          "end": "^\\s*(endtext)",
+          "endCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            }
+          },
+          "name": "meta.typeset.abc",
+          "patterns": [
+            {
+              "include": "#comments"
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(beginml)\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            }
+          },
+          "comment": "Embedded HTML",
+          "end": "^\\s*(endml)",
+          "endCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            }
+          },
+          "name": "meta.html.abc",
+          "patterns": [
+            {
+              "include": "text.html.basic"
+            },
+            {
+              "include": "#comments"
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(beginjs)\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            }
+          },
+          "comment": "Embedded JavaScript",
+          "end": "^\\s*(endjs)",
+          "endCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            }
+          },
+          "name": "meta.js.abc",
+          "patterns": [
+            {
+              "include": "source.js"
+            },
+            {
+              "include": "#comments"
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(beginsvg)\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            }
+          },
+          "comment": "Embedded SVG",
+          "end": "^\\s*(endsvg)",
+          "endCaptures": {
+            "1": {
+              "name": "comment.line.percentage.abc"
+            },
+            "2": {
+              "name": "support.function.directive.abc"
+            }
+          },
+          "name": "meta.svg.abc",
+          "patterns": [
+            {
+              "include": "text.xml"
+            },
+            {
+              "include": "#comments"
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(beginps)(\\s+(?:nosvg|svg))?\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            },
+            "2": {
+              "name": "variable.parameter.directive.abc"
+            }
+          },
+          "comment": "Embedded PostScript",
+          "end": "^\\s*(endps)",
+          "endCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            }
+          },
+          "name": "meta.ps.abc",
+          "patterns": [
+            {
+              "include": "source.postscript"
+            },
+            {
+              "include": "#comments"
+            }
+          ]
+        },
+        {
+          "begin": "^\\s*(beginmd)\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            }
+          },
+          "comment": "Embedded Markdown",
+          "end": "^\\s*(endmd)",
+          "endCaptures": {
+            "1": {
+              "name": "support.function.directive.abc"
+            }
+          },
+          "patterns": [
+            {
+              "include": "text.html.markdown"
+            },
+            {
+              "include": "#comments"
+            }
+          ]
+        },
+        {
+          "comment": "Inline Postscript Instructions",
+          "patterns": [
+            {
+              "begin": "^\\s*(postscript|ps)\\b",
+              "beginCaptures": {
+                "1": {
+                  "name": "support.function.directive.abc"
+                }
+              },
+              "end": "$",
+              "name": "meta.ps.abc",
+              "patterns": [
+                {
+                  "include": "source.postscript"
+                },
+                {
+                  "include": "#comments"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "scopeName": "source.fmt",
+  "uuid": "972d5050-f5bb-4d36-b94e-b00079652038"
+}
